@@ -1,0 +1,5 @@
+streamlit>=1.32
+pandas>=2.0
+feedparser>=6.0.10
+beautifulsoup4>=4.12
+requests>=2.31
