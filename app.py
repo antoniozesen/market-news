@@ -27,6 +27,8 @@ st.markdown(
 .stMarkdown, .stCaption, .stText, .stSubheader, .stHeader, label {
     color: #0f172a !important;
 }
+.main {background: linear-gradient(180deg,#f8fafc 0%,#eef2ff 100%);} 
+.block-container {padding-top: 1.2rem; padding-bottom: 2rem;}
 .card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
