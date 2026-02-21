@@ -1,15 +1,18 @@
 from __future__ import annotations
 
 import datetime as dt
+import importlib.util
 import re
 import time
 from typing import Any
 
-import feedparser
-import requests
-from bs4 import BeautifulSoup
-
 from .constants import MACRO_KEYWORDS, NEWS_SOURCES, OFFICIAL_SOURCES, REGION_KEYWORDS
+
+
+def dependency_status() -> tuple[bool, list[str]]:
+    required = ["feedparser", "bs4", "requests"]
+    missing = [name for name in required if importlib.util.find_spec(name) is None]
+    return len(missing) == 0, missing
 
 
 def default_last_week_range(today: dt.date | None = None) -> tuple[dt.date, dt.date]:
@@ -54,6 +57,9 @@ def determine_region_from_content(content_text: str, default_region: str) -> str
 
 
 def get_feed_news(feed_url: str, start_date: dt.date, end_date: dt.date, region: str) -> list[dict[str, Any]]:
+    import feedparser
+    from bs4 import BeautifulSoup
+
     try:
         feed = feedparser.parse(feed_url)
         news_items: list[dict[str, Any]] = []
@@ -99,6 +105,9 @@ def get_feed_news(feed_url: str, start_date: dt.date, end_date: dt.date, region:
 
 
 def extract_investopedia_weekly_report() -> dict[str, Any] | None:
+    import requests
+    from bs4 import BeautifulSoup
+
     headers = {"User-Agent": "Mozilla/5.0"}
     urls = [
         "https://www.investopedia.com/markets-news-4427704",
@@ -131,6 +140,10 @@ def extract_investopedia_weekly_report() -> dict[str, Any] | None:
 
 
 def fetch_news(start_date: dt.date, end_date: dt.date, add_week_ahead: bool = True) -> list[dict[str, Any]]:
+    deps_ok, _ = dependency_status()
+    if not deps_ok:
+        return []
+
     all_news: list[dict[str, Any]] = []
     for feed_url, region in NEWS_SOURCES:
         all_news.extend(get_feed_news(feed_url, start_date, end_date, region))

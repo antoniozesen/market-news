@@ -5,7 +5,7 @@ Proyecto Streamlit para recopilar noticias macroeconómicas, editar selección e
 ## Run
 
 ```bash
-pip install streamlit pandas feedparser beautifulsoup4 requests
+pip install -r requirements.txt
 streamlit run app.py
 ```
 
@@ -50,3 +50,8 @@ export FRED_API_KEY="optional_key"
 - No hay emails/passwords/API keys reales hardcodeadas en código.
 - Config se resuelve en `src/settings.py` desde `st.secrets` o entorno.
 - Antes de export/send corre un scanner de fugas para detectar tokens sospechosos.
+
+
+## Deploy (Streamlit Cloud)
+
+Este repo incluye `requirements.txt` para evitar errores de `ModuleNotFoundError` en despliegue.

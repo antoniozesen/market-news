@@ -8,7 +8,7 @@ import streamlit as st
 from src.email_service import send_email
 from src.html_builder import build_email_html
 from src.leak_scanner import scan_editor_rows, scan_html
-from src.news_service import default_last_week_range, fetch_news
+from src.news_service import default_last_week_range, dependency_status, fetch_news
 from src.settings import load_settings
 
 st.set_page_config(page_title="Macro News Digest", layout="wide")
@@ -27,7 +27,12 @@ if start_date > end_date:
     st.error("Start date must be <= end date")
     st.stop()
 
-if st.button("Fetch / Build dataset", type="primary"):
+deps_ok, missing_deps = dependency_status()
+if not deps_ok:
+    st.error("Faltan dependencias para ingestión de noticias: " + ", ".join(missing_deps))
+    st.info("Instala dependencias (por ejemplo con requirements.txt) y vuelve a desplegar.")
+
+if st.button("Fetch / Build dataset", type="primary", disabled=not deps_ok):
     with st.spinner("Fetching feeds..."):
         st.session_state["news_items"] = fetch_news(start_date, end_date, add_week_ahead=True)
 
