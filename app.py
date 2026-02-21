@@ -16,6 +16,17 @@ st.set_page_config(page_title="Macro News Digest", layout="wide")
 st.markdown(
     """
 <style>
+[data-testid="stAppViewContainer"] {
+    background: linear-gradient(180deg,#f8fafc 0%,#eef2ff 100%);
+    color: #0f172a;
+}
+[data-testid="stSidebar"] {
+    background: #f8fafc;
+}
+.block-container {padding-top: 1.2rem; padding-bottom: 2rem;}
+.stMarkdown, .stCaption, .stText, .stSubheader, .stHeader, label {
+    color: #0f172a !important;
+}
 .main {background: linear-gradient(180deg,#f8fafc 0%,#eef2ff 100%);} 
 .block-container {padding-top: 1.2rem; padding-bottom: 2rem;}
 .card {
@@ -30,6 +41,7 @@ st.markdown(
     border-radius: 10px;
     padding: .5rem .8rem;
     text-align: center;
+    color: #0f172a;
 }
 .preview-wrap {
     background:#ffffff;
@@ -109,6 +121,15 @@ df = pd.DataFrame(rows)
 for c in ["included", "title", "description", "date", "region", "notes", "link", "relevance_score"]:
     if c not in df.columns:
         df[c] = "" if c != "included" else True
+
+# Normalize dtypes for Streamlit data_editor compatibility
+df["included"] = df["included"].fillna(True).astype(bool)
+for text_col in ["title", "description", "region", "notes", "link"]:
+    df[text_col] = df[text_col].fillna("").astype(str)
+df["relevance_score"] = pd.to_numeric(df["relevance_score"], errors="coerce").fillna(1).astype(int)
+df["date"] = pd.to_datetime(df["date"], errors="coerce")
+df["date"] = df["date"].fillna(pd.Timestamp(dt.date.today()))
+df["date"] = df["date"].dt.date
 
 edited = st.data_editor(
     df[["included", "title", "description", "date", "region", "notes", "link", "relevance_score"]],
